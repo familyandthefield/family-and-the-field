@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colours */
+  --color-cream-50: #FBF9F6;
+  --color-cream-100: #F7F3ED;
+  --color-cream-200: #EFE8DC;
+
+  --color-soil-400: #A67C5D;
+  --color-soil-500: #8B5E3C;
+  --color-soil-600: #6F4A2F;
+  --color-soil-700: #5A3B26;
+
+  --color-leaf-400: #6B8F71;
+  --color-leaf-500: #4F6F56;
+  --color-leaf-600: #3D5743;
+  --color-leaf-700: #2F4334;
+
+  --color-terracotta-400: #C47A5A;
+  --color-terracotta-500: #A85F42;
+  --color-terracotta-600: #8A4C35;
+
+  --color-ink-700: #2C2A26;
+  --color-ink-800: #1F1E1B;
+  --color-ink-900: #141312;
+
+  /* Fonts */
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, serif;
+}

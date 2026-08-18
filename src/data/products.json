@@ -1,0 +1,18 @@
+[
+  {
+    "id": "eggs",
+    "name": "Eggs (half dozen)",
+    "price": "£3.00",
+    "description": "Fresh eggs collected each morning from our hens.",
+    "image": "/images/eggs.jpg",
+    "available": true
+  },
+  {
+    "id": "secret-salad",
+    "name": "Secret Salad (150g)",
+    "price": "£2.50",
+    "description": "A diverse mix of special salad leaves.",
+    "image": "/images/secret-salad.jpg",
+    "available": true
+  }
+]
