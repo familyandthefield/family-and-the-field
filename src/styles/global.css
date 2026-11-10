@@ -50,3 +50,102 @@
 .skip-link:focus {
   transform: none;
 }
+
+.season-crop {
+  scroll-margin-top: 5.5rem;
+}
+
+.season-table {
+  border-collapse: separate;
+  border-spacing: 3px;
+  width: max-content;
+  min-width: 100%;
+}
+
+.season-table th,
+.season-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.season-sticky {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--color-cream-50);
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  min-width: 8.5rem;
+  max-width: 11rem;
+  padding: 0.35rem 0.6rem 0.35rem 0;
+  box-shadow: 8px 0 8px -8px rgba(20, 19, 18, 0.18);
+}
+
+.season-month {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-ink-700);
+  padding-bottom: 0.15rem;
+}
+
+.season-week {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-ink-700);
+}
+
+.season-cell,
+.season-swatch {
+  width: 1.65rem;
+  min-width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.season-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.season-G { background: #c4c1ba; color: #141312; }
+.season-S { background: #c5e6e2; color: #141312; }
+.season-D { background: #6f4a2f; color: #fbf9f6; }
+.season-T { background: #e6a317; color: #141312; }
+.season-H { background: #1f9d45; color: #fbf9f6; }
+
+.season-empty {
+  background: var(--color-cream-100);
+  color: transparent;
+  box-shadow: inset 0 0 0 1px var(--color-cream-200);
+}
+
+.season-month-start {
+  box-shadow: inset 2px 0 0 var(--color-cream-200);
+}
+
+.season-current {
+  outline: 2px solid var(--color-leaf-700);
+  outline-offset: 1px;
+}
+
+.fulfilment-rules {
+  margin-top: 0.75rem;
+}
+
+.fulfilment-warning {
+  margin-top: 0.75rem;
+  color: #8a4c35;
+  font-weight: 600;
+}
+
+.fulfilment-blocked {
+  opacity: 0.45;
+}
