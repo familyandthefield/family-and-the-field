@@ -5,13 +5,17 @@ interface Props {
   price: string;
   description?: string;
   image?: string;
+  width?: number;
+  height?: number;
   paymentLink?: string; // no longer needed, but kept for compatibility
 }
 
-const { id, name, price, description, image } = Astro.props;
+const { id, name, price, description, image, width, height } = Astro.props;
 
 // Convert "£3.00" → 3.00 for Snipcart
 const numericPrice = parseFloat(price.replace("£", "").replace(",", "."));
+const itemUrl = new URL(Astro.url.pathname, Astro.site).href;
+const imageUrl = image ? new URL(image, Astro.site).href : "";
 ---
 
 <article class="bg-cream-100 rounded-xl overflow-hidden border border-cream-200 flex flex-col h-full">
@@ -20,8 +24,11 @@ const numericPrice = parseFloat(price.replace("£", "").replace(",", "."));
       <img 
         src={image} 
         alt={name}
+        width={width}
+        height={height}
         class="w-full h-full object-cover"
         loading="lazy"
+        decoding="async"
         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
       />
     ) : null}
@@ -41,13 +48,14 @@ const numericPrice = parseFloat(price.replace("£", "").replace(",", "."));
     )}
 
     <button
+      type="button"
       class="mt-auto snipcart-add-item inline-block text-center bg-leaf-600 hover:bg-leaf-700 text-cream-50 px-4 py-2.5 rounded-lg transition-colors text-sm font-medium w-full"
       data-item-id={id}
       data-item-name={name}
       data-item-price={numericPrice}
-      data-item-url={Astro.url.pathname}
+      data-item-url={itemUrl}
       data-item-description={description || ""}
-      data-item-image={image || ""}
+      data-item-image={imageUrl}
     >
       Add to Cart
     </button>

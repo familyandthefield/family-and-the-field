@@ -28,3 +28,25 @@
   --font-sans: "Manrope", system-ui, sans-serif;
   --font-serif: "Fraunces", Georgia, serif;
 }
+
+:focus-visible {
+  outline: 2px solid var(--color-leaf-700);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(-150%);
+  background: var(--color-cream-50);
+  color: var(--color-ink-900);
+  border: 1px solid var(--color-cream-200);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.skip-link:focus {
+  transform: none;
+}
