@@ -1,4 +1,5 @@
 ---
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
 const nav = [
   { label: "Our Story", href: "/our-story" },
   { label: "CSA", href: "/csa" },
@@ -9,26 +10,26 @@ const nav = [
 ---
 
 <header class="border-b border-cream-200 bg-cream-50/95 backdrop-blur sticky top-0 z-50">
-  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-    
-    <!-- Logo -->
-    <a href="/" class="font-serif text-xl text-ink-900 hover:text-leaf-700 transition-colors">
+  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+    <a href="/" class="font-serif text-lg md:text-xl leading-tight text-ink-900 hover:text-leaf-700 transition-colors min-w-0">
       Family and the Field
     </a>
 
-    <!-- Desktop Navigation -->
-    <nav class="hidden md:flex items-center gap-8 text-sm">
+    <nav class="hidden md:flex items-center gap-8 text-sm" aria-label="Primary">
       {nav.map(item => (
-        <a href={item.href} class="text-ink-700 hover:text-leaf-700 transition-colors">
+        <a
+          href={item.href}
+          aria-current={pathname === item.href ? "page" : undefined}
+          class:list={["transition-colors", pathname === item.href ? "text-ink-900 font-medium" : "text-ink-700 hover:text-leaf-700"]}
+        >
           {item.label}
         </a>
       ))}
     </nav>
 
-    <div class="flex items-center gap-4">
-      <!-- Cart Button -->
-      <button class="snipcart-checkout relative flex items-center text-ink-800 hover:text-leaf-700 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+    <div class="flex items-center gap-4 shrink-0">
+      <button type="button" class="snipcart-checkout relative flex items-center text-ink-800 hover:text-leaf-700 transition-colors" aria-label="Open cart">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
         <span class="snipcart-items-count absolute -top-2 -right-2 bg-leaf-600 text-cream-50 text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center">
@@ -36,32 +37,36 @@ const nav = [
         </span>
       </button>
 
-      <!-- Mobile Menu Button -->
-      <button 
-        id="menu-toggle" 
+      <button
+        id="menu-toggle"
+        type="button"
         class="md:hidden text-ink-800 hover:text-leaf-700 transition-colors"
-        aria-label="Toggle menu"
+        aria-label="Menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
       >
-        <!-- Hamburger icon -->
-        <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
-        <!-- Close icon (hidden by default) -->
-        <svg id="menu-icon-close" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <svg id="menu-icon-close" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
   </div>
 
-  <!-- Mobile Navigation with smooth animation -->
-  <div 
-    id="mobile-menu" 
+  <div
+    id="mobile-menu"
     class="md:hidden overflow-hidden transition-all duration-300 ease-in-out max-h-0 opacity-0"
+    inert
   >
-    <nav class="flex flex-col px-4 py-4 gap-4 text-sm border-t border-cream-200 bg-cream-50">
+    <nav class="flex flex-col px-4 py-4 gap-1 text-sm border-t border-cream-200 bg-cream-50" aria-label="Mobile">
       {nav.map(item => (
-        <a href={item.href} class="text-ink-700 hover:text-leaf-700 py-1 transition-colors">
+        <a
+          href={item.href}
+          aria-current={pathname === item.href ? "page" : undefined}
+          class:list={["py-2 transition-colors", pathname === item.href ? "text-ink-900 font-medium" : "text-ink-700 hover:text-leaf-700"]}
+        >
           {item.label}
         </a>
       ))}
@@ -77,21 +82,38 @@ const nav = [
 
   let isOpen = false;
 
-  toggle?.addEventListener('click', () => {
-    isOpen = !isOpen;
+  function setOpen(open: boolean) {
+    isOpen = open;
+    toggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle?.setAttribute('aria-label', open ? 'Close menu' : 'Menu');
 
-    if (isOpen) {
-      // Open
+    if (open) {
+      menu?.removeAttribute('inert');
       menu?.classList.remove('max-h-0', 'opacity-0');
-      menu?.classList.add('max-h-80', 'opacity-100');
+      menu?.classList.add('max-h-[40rem]', 'opacity-100');
       iconOpen?.classList.add('hidden');
       iconClose?.classList.remove('hidden');
     } else {
-      // Close
-      menu?.classList.remove('max-h-80', 'opacity-100');
+      menu?.setAttribute('inert', '');
+      menu?.classList.remove('max-h-[40rem]', 'opacity-100');
       menu?.classList.add('max-h-0', 'opacity-0');
       iconOpen?.classList.remove('hidden');
       iconClose?.classList.add('hidden');
+    }
+  }
+
+  toggle?.addEventListener('click', () => {
+    setOpen(!isOpen);
+  });
+
+  menu?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => setOpen(false));
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isOpen) {
+      setOpen(false);
+      toggle?.focus();
     }
   });
 </script>

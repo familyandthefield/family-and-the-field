@@ -5,6 +5,8 @@
     "price": "£3.00",
     "description": "Fresh eggs collected each morning from our hens.",
     "image": "/images/eggs.jpg",
+    "width": 1050,
+    "height": 1400,
     "available": true
   },
   {
@@ -13,6 +15,8 @@
     "price": "£2.50",
     "description": "A diverse mix of special salad leaves.",
     "image": "/images/secret-salad.jpg",
+    "width": 1400,
+    "height": 1050,
     "available": true
   }
 ]
