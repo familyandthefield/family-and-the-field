@@ -74,10 +74,16 @@ const jsonLd = JSON.stringify({
     </main>
     <Footer />
 
+    <script>
+      import { installFulfilmentGuard } from "../scripts/fulfilment-cart";
+      installFulfilmentGuard();
+    </script>
+
     <script is:inline define:vars={{ snipcartPublicApiKey }}>
       window.SnipcartSettings = {
         publicApiKey: snipcartPublicApiKey,
         loadStrategy: "on-user-interaction",
+        templatesUrl: "/snipcart-templates.html",
       };
 
       (function() {
@@ -103,6 +109,6 @@ const jsonLd = JSON.stringify({
       })();
     </script>
 
-    <div hidden id="snipcart" data-api-key={snipcartPublicApiKey}></div>
+    <div hidden id="snipcart" data-api-key={snipcartPublicApiKey} data-templates-url="/snipcart-templates.html"></div>
   </body>
 </html>

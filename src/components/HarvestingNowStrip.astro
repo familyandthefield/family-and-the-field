@@ -1,0 +1,80 @@
+---
+import { NOTHING_HARVESTING } from "../lib/season-plan";
+import type { SeasonLoad } from "../lib/load-season";
+
+interface Props {
+  season: SeasonLoad;
+}
+
+const { season } = Astro.props;
+const unavailable = season.source === "unavailable";
+---
+
+<section class="border-t border-cream-200 bg-cream-50" aria-labelledby="home-harvest-heading" data-harvest-strip>
+  <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-8">
+    <h2 id="home-harvest-heading" class="font-serif text-xl text-ink-900 shrink-0">Harvesting now</h2>
+    <div class="text-ink-700 flex-1 min-w-0" data-harvest-now-list>
+      {unavailable ? (
+        <p>The harvest plan could not be loaded just now.</p>
+      ) : season.view.harvestingNow.length > 0 ? (
+        <ul class="flex flex-wrap gap-x-4 gap-y-1">
+          {season.view.harvestingNow.map((group) => (
+            <li>
+              <span class="font-medium text-ink-900">{group.crop}</span>
+              {group.varieties.length > 0 && <span> {group.varieties.join(", ")}</span>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>{NOTHING_HARVESTING}</p>
+      )}
+    </div>
+    <p class="text-sm text-ink-700 shrink-0" data-harvest-week>{unavailable ? "" : season.view.weekLabel}</p>
+    <a href="/harvest" class="text-leaf-700 hover:text-leaf-600 underline underline-offset-4 text-sm shrink-0">See the harvest plan</a>
+  </div>
+</section>
+
+<script>
+  import { NOTHING_HARVESTING } from "../lib/season-plan";
+
+  const root = document.querySelector<HTMLElement>("[data-harvest-strip]");
+  const list = root?.querySelector<HTMLElement>("[data-harvest-now-list]");
+  const week = root?.querySelector<HTMLElement>("[data-harvest-week]");
+
+  if (list) {
+    fetch("/api/season", { headers: { accept: "application/json" } })
+      .then((response) => {
+        if (!response.ok) throw new Error(String(response.status));
+        return response.json();
+      })
+      .then((data: { source?: string; weekLabel?: string; harvestingNow?: { crop?: string; varieties?: string[] }[] }) => {
+        if (data.source === "unavailable") {
+          list.textContent = "The harvest plan could not be loaded just now.";
+          return;
+        }
+        const groups = Array.isArray(data.harvestingNow) ? data.harvestingNow : [];
+        if (groups.length === 0) {
+          if (list.textContent?.trim() !== NOTHING_HARVESTING) list.textContent = NOTHING_HARVESTING;
+        } else {
+          const ul = document.createElement("ul");
+          ul.className = "flex flex-wrap gap-x-4 gap-y-1";
+          for (const group of groups) {
+            if (!group || typeof group.crop !== "string") continue;
+            const item = document.createElement("li");
+            const name = document.createElement("span");
+            name.className = "font-medium text-ink-900";
+            name.textContent = group.crop;
+            item.append(name);
+            const varieties = Array.isArray(group.varieties) ? group.varieties.filter((variety) => typeof variety === "string") : [];
+            if (varieties.length > 0) item.append(document.createTextNode(` ${varieties.join(", ")}`));
+            ul.append(item);
+          }
+          list.replaceChildren(ul);
+        }
+        if (week && typeof data.weekLabel === "string") week.textContent = data.weekLabel;
+      })
+      .catch(() => {
+        // Keep the copy already rendered from the last saved plan.
+      });
+  }
+</script>

@@ -1,0 +1,187 @@
+---
+import {
+  ACTIVITY_LABEL,
+  GARDEN_TIMEZONE,
+  isCurrentColumn,
+  MONTHS,
+  NOTHING_HARVESTING,
+  varietyLabel,
+  type ActivityCode,
+} from "../lib/season-plan";
+import type { SeasonLoad } from "../lib/load-season";
+
+interface Props {
+  season: SeasonLoad;
+}
+
+const { season } = Astro.props;
+const { view } = season;
+const legend = Object.entries(ACTIVITY_LABEL) as [ActivityCode, string][];
+const updated = season.fetchedAt
+  ? new Intl.DateTimeFormat("en-GB", {
+      timeZone: GARDEN_TIMEZONE,
+      day: "numeric",
+      month: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(season.fetchedAt))
+  : "";
+---
+
+<section class="max-w-6xl mx-auto px-4 py-16 md:py-24">
+  <h1 class="font-serif text-3xl md:text-4xl text-ink-900 mb-8">Harvest</h1>
+  <div class="max-w-2xl text-ink-700 space-y-6 leading-relaxed mb-12">
+    <p>Everything is harvested to order. Availability changes with the season and the weather.</p>
+    <p>What’s ready this week is listed in the shop. The plan below is what the garden is sowing, transplanting and harvesting.</p>
+    <p>
+      <a href="/shop" class="text-leaf-700 hover:text-leaf-600 underline underline-offset-4">View the shop</a>
+    </p>
+  </div>
+
+  {season.source === "unavailable" ? (
+    <p class="text-ink-700">The season plan could not be loaded just now. Please check back soon.</p>
+  ) : (
+    <div class="space-y-12">
+      <section class="rounded-2xl border border-cream-200 bg-cream-100 p-6 md:p-8" aria-labelledby="harvesting-now-heading">
+        <h2 id="harvesting-now-heading" class="font-serif text-2xl text-ink-900 mb-1">Harvesting now</h2>
+        <p class="text-sm text-ink-700 mb-4">{view.weekLabel}</p>
+        {view.harvestingNow.length > 0 ? (
+          <ul class="space-y-3">
+            {view.harvestingNow.map((group) => (
+              <li>
+                <p class="font-medium text-ink-900">{group.crop}</p>
+                {group.varieties.length > 0 && (
+                  <p class="text-ink-700">{group.varieties.join(", ")}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-ink-700">{NOTHING_HARVESTING}</p>
+        )}
+      </section>
+
+      {view.comingSoon.length > 0 && (
+        <section aria-labelledby="coming-soon-heading">
+          <h2 id="coming-soon-heading" class="font-serif text-2xl text-ink-900 mb-2">Coming soon</h2>
+          <p class="text-ink-700 mb-4">Marked for harvest in the next four weeks.</p>
+          <ul class="space-y-3">
+            {view.comingSoon.map((group) => (
+              <li>
+                <p class="font-medium text-ink-900">{group.crop}</p>
+                <ul class="text-ink-700">
+                  {group.varieties.map((variety) => (
+                    <li>{variety.name ? `${variety.name} — from ${variety.fromLabel}` : `From ${variety.fromLabel}`}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {view.sowingNow.length > 0 && (
+        <section aria-labelledby="sowing-now-heading">
+          <h2 id="sowing-now-heading" class="font-serif text-2xl text-ink-900 mb-4">Being sown this week</h2>
+          <ul class="space-y-3">
+            {view.sowingNow.map((group) => (
+              <li class="text-ink-700">
+                <span class="font-medium text-ink-900">{group.crop}</span>
+                {group.varieties.length > 0 && <span> — {group.varieties.join(", ")}</span>}
+                <span> · {group.label}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section id="in-season" class="scroll-mt-24" aria-labelledby="in-season-heading">
+        <h2 id="in-season-heading" class="font-serif text-2xl md:text-3xl text-ink-900 mb-3">In season</h2>
+        <p class="text-ink-700 mb-4 max-w-2xl">Each block is one week of the month. Week 4 runs from the 22nd to the end of the month.</p>
+        <ul class="flex flex-wrap gap-x-5 gap-y-3 mb-4" aria-label="Season plan key">
+          {legend.map(([code, label]) => (
+            <li class="flex items-center gap-2 text-sm text-ink-700">
+              <span class:list={["season-swatch", `season-${code}`]} aria-hidden="true">{code}</span>
+              <span>{label}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="text-sm text-ink-700 mb-6">
+          Swipe sideways to see the year. The outlined column is this week.
+          {season.source === "live" && updated && ` Updated from the garden plan on ${updated}. It refreshes about once an hour.`}
+          {season.source === "snapshot" && updated && ` Showing the last saved garden plan from ${updated}. The live plan could not be loaded just now.`}
+        </p>
+
+        {view.crops.length > 0 && (
+          <nav class="flex flex-wrap gap-x-4 gap-y-2 mb-8 text-sm" aria-label="Crops">
+            {view.crops.map((crop) => (
+              <a href={`#${crop.id}`} class="text-leaf-700 hover:text-leaf-600 underline underline-offset-4">{crop.crop}</a>
+            ))}
+          </nav>
+        )}
+
+        <div class="space-y-8">
+          {view.crops.map((crop) => (
+            <section id={crop.id} class="season-crop rounded-2xl border border-cream-200 bg-cream-50 p-4 md:p-5" aria-labelledby={`${crop.id}-title`}>
+              <h3 id={`${crop.id}-title`} class="font-serif text-xl text-ink-900 mb-3">{crop.crop}</h3>
+              <div class="overflow-x-auto overscroll-x-contain" tabindex="0">
+                <table class="season-table">
+                  <caption class="sr-only">{crop.crop} sowing, transplant and harvest by week</caption>
+                  <thead>
+                    <tr>
+                      <th class="season-sticky" scope="col" rowspan="2">Variety</th>
+                      {MONTHS.map((month, monthIndex) => (
+                        <th class:list={["season-month", monthIndex > 0 && "season-month-start"]} scope="colgroup" colspan="4" title={month}>
+                          <abbr title={month}>{month.slice(0, 3)}</abbr>
+                        </th>
+                      ))}
+                    </tr>
+                    <tr>
+                      {MONTHS.map((month, monthIndex) => (
+                        [1, 2, 3, 4].map((week) => (
+                          <th
+                            scope="col"
+                            title={`${month}, week ${week}${isCurrentColumn(view.now, monthIndex, week - 1) ? ", this week" : ""}`}
+                            class:list={[
+                              "season-week",
+                              week === 1 && monthIndex > 0 && "season-month-start",
+                              isCurrentColumn(view.now, monthIndex, week - 1) && "season-current",
+                            ]}
+                          >
+                            <span class="sr-only">{month} week </span>{week}
+                          </th>
+                        ))
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {crop.varieties.map((variety) => (
+                      <tr>
+                        <th class="season-sticky" scope="row">{varietyLabel(variety)}</th>
+                        {variety.weeks.map((weeks, monthIndex) => (
+                          weeks.map((mark, weekIndex) => (
+                            <td
+                              title={mark ? `${MONTHS[monthIndex]} week ${weekIndex + 1}: ${ACTIVITY_LABEL[mark]}` : undefined}
+                              class:list={[
+                                "season-cell",
+                                mark ? `season-${mark}` : "season-empty",
+                                weekIndex === 0 && monthIndex > 0 && "season-month-start",
+                                isCurrentColumn(view.now, monthIndex, weekIndex) && "season-current",
+                              ]}
+                            >
+                              {mark ?? ""}
+                            </td>
+                          ))
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ))}
+        </div>
+      </section>
+    </div>
+  )}
+</section>

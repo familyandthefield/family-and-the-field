@@ -7,11 +7,13 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/refresh-season-snapshot.mjs && astro build",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/vercel": "^11.0.21",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.1.6",
     "tailwindcss": "^4.3.3"

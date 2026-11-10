@@ -1,15 +1,31 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProductCard from '../components/ProductCard.astro';
+import HarvestingNowStrip from '../components/HarvestingNowStrip.astro';
+import { availableBoxes, availableProduce } from '../lib/products';
+import { loadSeason } from '../lib/load-season';
+import { buildSeasonView } from '../lib/season-plan';
 
 let availableProducts = [];
+let boxes = [];
 
 try {
-  const productsData = await import('../data/products.json');
-  const products = productsData.default || productsData;
-  availableProducts = products.filter((p) => p.available);
+  availableProducts = availableProduce();
+  boxes = availableBoxes();
 } catch (error) {
   console.error('Error loading products:', error);
+}
+
+let season;
+try {
+  season = await loadSeason();
+} catch (error) {
+  console.error('Error loading the season plan:', error);
+  season = {
+    view: buildSeasonView({ varieties: [] }, new Date()),
+    source: "unavailable" as const,
+    fetchedAt: null,
+  };
 }
 ---
 
@@ -60,6 +76,8 @@ try {
     </a>
   </section>
 
+  <HarvestingNowStrip season={season} />
+
   <!-- Shop section on homepage -->
   <section id="shop" class="bg-cream-100 border-t border-cream-200">
     <div class="max-w-6xl mx-auto px-4 py-16">
@@ -78,6 +96,17 @@ try {
         </div>
       ) : (
         <p class="text-center text-ink-700">Nothing available right now — check back soon.</p>
+      )}
+
+      {boxes.length > 0 && (
+        <div class="mt-16">
+          <h2 class="font-serif text-2xl text-ink-900 mb-8 text-center">Veg boxes</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {boxes.map((product) => (
+              <ProductCard {...product} />
+            ))}
+          </div>
+        </div>
       )}
 
       <div class="text-center mt-12">
