@@ -18,5 +18,16 @@
     "width": 1400,
     "height": 1050,
     "available": true
+  },
+  {
+    "id": "heirloom-carrots",
+    "name": "Heirloom Carrots (1kg mixed bunch)",
+    "price": "£3.75",
+    "description": "A 1kg bunch of mixed heirloom organic carrots — Jaune Obtuse du Doubs, Touchon, Autumn King and Saint Valery.",
+    "image": "/images/heirloom-carrots.jpg",
+    "alt": "A hand holding a freshly pulled bunch of mixed yellow and orange heirloom carrots with green tops, grass behind",
+    "width": 900,
+    "height": 1200,
+    "available": true
   }
 ]
