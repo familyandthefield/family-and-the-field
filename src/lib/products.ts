@@ -1,9 +1,10 @@
 import productsJson from "../data/products.json";
 
 /**
- * Weekly produce stays in the main shop grid.
- * A veg box uses the same fields with "category": "box".
- * It appears in the Veg boxes section only when available is true.
+ * Weekly produce stays in the main shop grid, including items with
+ * available set to false. ProductCard shows those as out of stock.
+ * A veg box uses the same fields with "category": "box" and stays in
+ * the Veg boxes section, including when it is out of stock.
  */
 export type Product = {
   id: string;
@@ -22,10 +23,10 @@ export function allProducts(): Product[] {
   return productsJson as Product[];
 }
 
-export function availableProduce(products = allProducts()): Product[] {
-  return products.filter((product) => product.available && product.category !== "box");
+export function produce(products = allProducts()): Product[] {
+  return products.filter((product) => product.category !== "box");
 }
 
-export function availableBoxes(products = allProducts()): Product[] {
-  return products.filter((product) => product.available && product.category === "box");
+export function vegBoxes(products = allProducts()): Product[] {
+  return products.filter((product) => product.category === "box");
 }

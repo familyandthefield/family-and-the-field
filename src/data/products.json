@@ -17,7 +17,7 @@
     "image": "/images/secret-salad.jpg",
     "width": 1400,
     "height": 1050,
-    "available": true
+    "available": false
   },
   {
     "id": "heirloom-carrots",

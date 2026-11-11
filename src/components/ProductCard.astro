@@ -8,10 +8,12 @@ interface Props {
   alt?: string;
   width?: number;
   height?: number;
+  available?: boolean;
   paymentLink?: string; // no longer needed, but kept for compatibility
 }
 
-const { id, name, price, description, image, alt, width, height } = Astro.props;
+const { id, name, price, description, image, alt, width, height, available = true } = Astro.props;
+const inStock = available !== false;
 
 // Convert "£3.00" → 3.00 for Snipcart
 const numericPrice = parseFloat(price.replace("£", "").replace(",", "."));
@@ -20,14 +22,14 @@ const imageUrl = image ? new URL(image, Astro.site).href : "";
 ---
 
 <article class="bg-cream-100 rounded-xl overflow-hidden border border-cream-200 flex flex-col h-full">
-  <div class="aspect-square bg-cream-200 overflow-hidden">
+  <div class="aspect-square bg-cream-200 overflow-hidden relative">
     {image ? (
       <img 
         src={image} 
         alt={alt || name}
         width={width}
         height={height}
-        class="w-full h-full object-cover"
+        class:list={["w-full h-full object-cover", !inStock && "grayscale opacity-70"]}
         loading="lazy"
         decoding="async"
         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
@@ -36,6 +38,11 @@ const imageUrl = image ? new URL(image, Astro.site).href : "";
     <div class="w-full h-full hidden items-center justify-center text-ink-700/40 text-sm">
       No image
     </div>
+    {!inStock && (
+      <p class="absolute top-3 left-3 bg-ink-900/85 text-cream-50 text-xs font-medium tracking-wide uppercase px-2.5 py-1 rounded-full">
+        Out of stock
+      </p>
+    )}
   </div>
 
   <div class="p-5 flex flex-col flex-grow">
@@ -48,17 +55,28 @@ const imageUrl = image ? new URL(image, Astro.site).href : "";
       </p>
     )}
 
-    <button
-      type="button"
-      class="mt-auto snipcart-add-item inline-block text-center bg-leaf-600 hover:bg-leaf-700 text-cream-50 px-4 py-2.5 rounded-lg transition-colors text-sm font-medium w-full"
-      data-item-id={id}
-      data-item-name={name}
-      data-item-price={numericPrice}
-      data-item-url={itemUrl}
-      data-item-description={description || ""}
-      data-item-image={imageUrl}
-    >
-      Add to Cart
-    </button>
+    {inStock ? (
+      <button
+        type="button"
+        class="mt-auto snipcart-add-item inline-block text-center bg-leaf-600 hover:bg-leaf-700 text-cream-50 px-4 py-2.5 rounded-lg transition-colors text-sm font-medium w-full"
+        data-item-id={id}
+        data-item-name={name}
+        data-item-price={numericPrice}
+        data-item-url={itemUrl}
+        data-item-description={description || ""}
+        data-item-image={imageUrl}
+      >
+        Add to Cart
+      </button>
+    ) : (
+      <button
+        type="button"
+        class="mt-auto inline-block text-center bg-cream-200 text-ink-700 px-4 py-2.5 rounded-lg text-sm font-medium w-full cursor-not-allowed"
+        disabled
+        aria-disabled="true"
+      >
+        Out of stock
+      </button>
+    )}
   </div>
 </article>

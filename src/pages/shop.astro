@@ -1,14 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProductCard from '../components/ProductCard.astro';
-import { availableBoxes, availableProduce } from '../lib/products';
+import { produce, vegBoxes } from '../lib/products';
 
-let availableProducts = [];
+let products = [];
 let boxes = [];
 
 try {
-  availableProducts = availableProduce();
-  boxes = availableBoxes();
+  products = produce();
+  boxes = vegBoxes();
 } catch (error) {
   console.error('Error loading products:', error);
 }
@@ -25,9 +25,9 @@ try {
       Everything is harvested to order. Availability changes with the season and the weather — that’s the nature of real food.
     </p>
 
-    {availableProducts.length > 0 ? (
+    {products.length > 0 ? (
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {availableProducts.map((product) => (
+        {products.map((product) => (
           <ProductCard {...product} />
         ))}
       </div>

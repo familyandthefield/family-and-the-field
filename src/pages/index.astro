@@ -2,16 +2,16 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProductCard from '../components/ProductCard.astro';
 import HarvestingNowStrip from '../components/HarvestingNowStrip.astro';
-import { availableBoxes, availableProduce } from '../lib/products';
+import { produce, vegBoxes } from '../lib/products';
 import { loadSeason } from '../lib/load-season';
 import { buildSeasonView } from '../lib/season-plan';
 
-let availableProducts = [];
+let products = [];
 let boxes = [];
 
 try {
-  availableProducts = availableProduce();
-  boxes = availableBoxes();
+  products = produce();
+  boxes = vegBoxes();
 } catch (error) {
   console.error('Error loading products:', error);
 }
@@ -88,9 +88,9 @@ try {
         </p>
       </div>
 
-      {availableProducts.length > 0 ? (
+      {products.length > 0 ? (
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {availableProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard {...product} />
           ))}
         </div>
