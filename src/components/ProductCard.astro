@@ -5,12 +5,13 @@ interface Props {
   price: string;
   description?: string;
   image?: string;
+  alt?: string;
   width?: number;
   height?: number;
   paymentLink?: string; // no longer needed, but kept for compatibility
 }
 
-const { id, name, price, description, image, width, height } = Astro.props;
+const { id, name, price, description, image, alt, width, height } = Astro.props;
 
 // Convert "£3.00" → 3.00 for Snipcart
 const numericPrice = parseFloat(price.replace("£", "").replace(",", "."));
@@ -23,7 +24,7 @@ const imageUrl = image ? new URL(image, Astro.site).href : "";
     {image ? (
       <img 
         src={image} 
-        alt={name}
+        alt={alt || name}
         width={width}
         height={height}
         class="w-full h-full object-cover"
