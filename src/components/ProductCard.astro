@@ -9,11 +9,13 @@ interface Props {
   width?: number;
   height?: number;
   available?: boolean;
+  stockNote?: string;
   paymentLink?: string; // no longer needed, but kept for compatibility
 }
 
-const { id, name, price, description, image, alt, width, height, available = true } = Astro.props;
+const { id, name, price, description, image, alt, width, height, available = true, stockNote } = Astro.props;
 const inStock = available !== false;
+const unavailableNote = !inStock ? stockNote?.trim() ?? "" : "";
 
 // Convert "£3.00" → 3.00 for Snipcart
 const numericPrice = parseFloat(price.replace("£", "").replace(",", "."));
@@ -55,28 +57,34 @@ const imageUrl = image ? new URL(image, Astro.site).href : "";
       </p>
     )}
 
-    {inStock ? (
-      <button
-        type="button"
-        class="mt-auto snipcart-add-item inline-block text-center bg-leaf-600 hover:bg-leaf-700 text-cream-50 px-4 py-2.5 rounded-lg transition-colors text-sm font-medium w-full"
-        data-item-id={id}
-        data-item-name={name}
-        data-item-price={numericPrice}
-        data-item-url={itemUrl}
-        data-item-description={description || ""}
-        data-item-image={imageUrl}
-      >
-        Add to Cart
-      </button>
-    ) : (
-      <button
-        type="button"
-        class="mt-auto inline-block text-center bg-cream-200 text-ink-700 px-4 py-2.5 rounded-lg text-sm font-medium w-full cursor-not-allowed"
-        disabled
-        aria-disabled="true"
-      >
-        Out of stock
-      </button>
-    )}
+    <div class="mt-auto">
+      {unavailableNote && (
+        <p class="text-sm font-medium text-ink-900 leading-relaxed mb-3">{unavailableNote}</p>
+      )}
+
+      {inStock ? (
+        <button
+          type="button"
+          class="snipcart-add-item inline-block text-center bg-leaf-600 hover:bg-leaf-700 text-cream-50 px-4 py-2.5 rounded-lg transition-colors text-sm font-medium w-full"
+          data-item-id={id}
+          data-item-name={name}
+          data-item-price={numericPrice}
+          data-item-url={itemUrl}
+          data-item-description={description || ""}
+          data-item-image={imageUrl}
+        >
+          Add to Cart
+        </button>
+      ) : (
+        <button
+          type="button"
+          class="inline-block text-center bg-cream-200 text-ink-700 px-4 py-2.5 rounded-lg text-sm font-medium w-full cursor-not-allowed"
+          disabled
+          aria-disabled="true"
+        >
+          Out of stock
+        </button>
+      )}
+    </div>
   </div>
 </article>
