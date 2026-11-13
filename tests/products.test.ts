@@ -7,13 +7,16 @@ const products = JSON.parse(
 );
 
 describe("shop catalogue availability", () => {
-  it("keeps every product in the file and marks only Secret Salad out of stock", () => {
+  it("keeps every product visible and marks Eggs and Secret Salad out of stock", () => {
     const byId = Object.fromEntries(products.map((product) => [product.id, product]));
 
     assert.deepEqual(Object.keys(byId).sort(), ["eggs", "heirloom-carrots", "secret-salad"]);
-    assert.equal(byId.eggs.available, true);
+    assert.equal(byId.eggs.available, false);
+    assert.equal(byId.eggs.stockNote, "See you in the spring");
     assert.equal(byId["heirloom-carrots"].available, true);
+    assert.equal(byId["heirloom-carrots"].stockNote, undefined);
     assert.equal(byId["secret-salad"].available, false);
+    assert.equal(byId["secret-salad"].stockNote, undefined);
     assert.equal(byId["secret-salad"].name, "Secret Salad (150g)");
     assert.equal(byId["secret-salad"].price, "£2.50");
   });

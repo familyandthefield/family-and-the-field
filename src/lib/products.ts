@@ -3,6 +3,8 @@ import productsJson from "../data/products.json";
 /**
  * Weekly produce stays in the main shop grid, including items with
  * available set to false. ProductCard shows those as out of stock.
+ * An optional stockNote is shown on the card only while that product
+ * is unavailable.
  * A veg box uses the same fields with "category": "box" and stays in
  * the Veg boxes section, including when it is out of stock.
  */
@@ -16,6 +18,7 @@ export type Product = {
   width?: number;
   height?: number;
   available?: boolean;
+  stockNote?: string;
   category?: string;
 };
 
